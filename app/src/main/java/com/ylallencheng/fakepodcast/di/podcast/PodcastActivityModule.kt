@@ -13,5 +13,5 @@ interface PodcastActivityModule {
             PodcastModule::class
         ]
     )
-    abstract fun contributePodcastActivity(): PodcastActivity
+    fun contributePodcastActivity(): PodcastActivity
 }

@@ -13,5 +13,5 @@ interface PlayerActivityModule {
             PlayerModule::class
         ]
     )
-    abstract fun contributePlayerActivity(): PlayerActivity
+    fun contributePlayerActivity(): PlayerActivity
 }
