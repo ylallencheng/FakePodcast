@@ -13,9 +13,9 @@ import javax.inject.Singleton
 @Component(
     modules = [
         AndroidSupportInjectionModule::class,
-        AppModule::class,
         ViewModelFactoryModule::class,
-        ViewModelModule::class
+        ViewModelModule::class,
+        AppModule::class
     ]
 )
 interface AppComponent : AndroidInjector<FPApplication> {

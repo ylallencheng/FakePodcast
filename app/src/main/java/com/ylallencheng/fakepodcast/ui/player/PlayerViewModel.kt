@@ -1,7 +1,8 @@
 package com.ylallencheng.fakepodcast.ui.player
 
 import androidx.lifecycle.ViewModel
+import javax.inject.Inject
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel @Inject constructor() : ViewModel() {
 
 }
