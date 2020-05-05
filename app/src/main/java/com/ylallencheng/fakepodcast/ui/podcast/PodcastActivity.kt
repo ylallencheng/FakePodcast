@@ -25,15 +25,15 @@ class PodcastActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mBinding.root)
-        observe()
+//        observe()
     }
 
     private fun observe() =
         lifecycleScope.launchWhenResumed {
-            mViewModel.podcasts.observe(this@PodcastActivity) {
-                // submist list
-
-            }
+//            mViewModel.podcasts.observe(this@PodcastActivity) {
+//                // submist list
+//
+//            }
 
             mViewModel.collections.observe(this@PodcastActivity) {
 

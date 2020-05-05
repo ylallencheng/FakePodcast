@@ -10,7 +10,8 @@ interface PodcastActivityModule {
     @PodcastScope
     @ContributesAndroidInjector(
         modules = [
-            PodcastModule::class
+            PodcastModule::class,
+            PodcastFragmentModule::class
         ]
     )
     fun contributePodcastActivity(): PodcastActivity
