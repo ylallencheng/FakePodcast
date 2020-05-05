@@ -1,12 +1,11 @@
 package com.ylallencheng.fakepodcast.ui.podcast
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.ylallencheng.fakepodcast.databinding.ActivityPodcastBinding
 import com.ylallencheng.fakepodcast.di.viewmodel.ViewModelFactory
-import com.ylallencheng.fakepodcast.extension.observe
+import com.ylallencheng.fakepodcast.util.observe
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 
@@ -35,7 +34,7 @@ class PodcastActivity : DaggerAppCompatActivity() {
 //
 //            }
 
-            mViewModel.collections.observe(this@PodcastActivity) {
+            mViewModel.getCollection.observe(this@PodcastActivity) {
 
             }
         }

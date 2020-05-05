@@ -1,6 +1,6 @@
 @file:JvmName("LiveDataUtil")
 
-package com.ylallencheng.fakepodcast.extension
+package com.ylallencheng.fakepodcast.util
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
