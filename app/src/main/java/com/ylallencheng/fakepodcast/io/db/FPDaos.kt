@@ -12,17 +12,17 @@ import com.ylallencheng.fakepodcast.io.model.Podcast
 interface PodcastDao {
 
     @Query("SELECT * FROM Podcast")
-    fun getAllPodcasts(): LiveData<List<Podcast>>
+    fun getAllPodcasts(): List<Podcast>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPodcasts(podcasts: List<Podcast>)
+    suspend fun insertPodcasts(podcasts: List<Podcast>)
 }
 
 @Dao
 interface CollectionDao {
     @Query("SELECT * FROM Collection WHERE collectionId == :collectionId")
-    fun getCollection(collectionId: Int): LiveData<Collection>
+    fun getCollection(collectionId: Int): Collection
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertCollections(collections: List<Collection>)
+    suspend fun insertCollections(collections: List<Collection>)
 }

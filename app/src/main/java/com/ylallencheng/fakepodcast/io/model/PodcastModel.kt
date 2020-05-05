@@ -7,7 +7,7 @@ import com.squareup.moshi.Types
 
 data class Response<T>(val data: T?)
 
-data class Podcasts(val podcasts: List<Podcast>?)
+data class Podcasts(@field:Json(name = "podcast") val podcasts: List<Podcast>?)
 
 @Entity
 data class Podcast(

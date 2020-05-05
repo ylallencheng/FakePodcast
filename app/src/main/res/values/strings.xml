@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">FakePodcast</string>
-    <string name="base_url">http://demo4491005.mockable.io/</string>
+    <string name="base_url">https://demo4491005.mockable.io/</string>
 </resources>
