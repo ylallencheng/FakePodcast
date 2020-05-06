@@ -35,7 +35,8 @@ class PodcastActivity : DaggerAppCompatActivity() {
                     from = this@PodcastActivity,
                     title = it.feedName,
                     description = it.description,
-                    contentUrl = it.contentUrl
+                    contentUrl = it.contentUrl,
+                    artworkUrl = mViewModel.getCollection.value?.data?.artworkBigImageUrl ?: ""
                 )
             }
         }

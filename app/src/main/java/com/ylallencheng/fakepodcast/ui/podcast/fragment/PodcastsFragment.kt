@@ -7,15 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.ylallencheng.fakepodcast.R
 import com.ylallencheng.fakepodcast.databinding.FragmentPodcastsBinding
 import com.ylallencheng.fakepodcast.di.viewmodel.ViewModelFactory
-import com.ylallencheng.fakepodcast.util.observe
 import com.ylallencheng.fakepodcast.io.model.Status
 import com.ylallencheng.fakepodcast.ui.podcast.PodcastViewModel
 import com.ylallencheng.fakepodcast.ui.podcast.adapter.PodcastsAdapter
+import com.ylallencheng.fakepodcast.util.observe
 import dagger.android.support.DaggerFragment
-import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class PodcastsFragment : DaggerFragment() {
