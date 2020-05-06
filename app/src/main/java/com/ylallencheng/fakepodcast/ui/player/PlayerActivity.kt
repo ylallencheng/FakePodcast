@@ -10,6 +10,8 @@ import com.bumptech.glide.Glide
 import com.ylallencheng.fakepodcast.R
 import com.ylallencheng.fakepodcast.databinding.ActivityPlayerBinding
 import com.ylallencheng.fakepodcast.di.viewmodel.ViewModelFactory
+import com.ylallencheng.fakepodcast.service.PlayerService
+import com.ylallencheng.fakepodcast.util.formatPlayerDuration
 import com.ylallencheng.fakepodcast.util.observe
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
@@ -49,6 +51,14 @@ class PlayerActivity : DaggerAppCompatActivity() {
         setContentView(mBinding.root)
         initUi()
         observe()
+        startPlayerService()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        intent?.extras?.getString("contentUrl")?.also {
+            mViewModel.startPlay(applicationContext, it)
+        }
     }
 
     private fun initUi() {
@@ -84,24 +94,33 @@ class PlayerActivity : DaggerAppCompatActivity() {
                 })
 
             imageViewPauseOrPlay.setOnClickListener {
-                mViewModel.playOrPause()
-
+                mViewModel.pausePlay(applicationContext)
             }
 
             imageViewReplay.setOnClickListener {
-                mViewModel.replay()
+                mViewModel.replay(applicationContext)
             }
 
             imageViewForward.setOnClickListener {
-                mViewModel.forward()
+                mViewModel.forward(applicationContext)
             }
         }
     }
 
     private fun observe() =
         lifecycleScope.launchWhenResumed {
+
+            mViewModel.contentTotalDuration.observe(this@PlayerActivity) {
+                mBinding.textViewTotalProgress.text = formatPlayerDuration(it.toLong())
+            }
+
             mViewModel.playing.observe(this@PlayerActivity) {
                 mBinding.imageViewPauseOrPlay.setImageResource(if (it) R.drawable.pause_circle_filled_24px else R.drawable.play_arrow_24px)
             }
         }
+
+    private fun startPlayerService() {
+        val intent = Intent(applicationContext, PlayerService::class.java)
+        applicationContext.startService(intent)
+    }
 }
