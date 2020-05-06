@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.ylallencheng.fakepodcast.databinding.ActivityPodcastBinding
 import com.ylallencheng.fakepodcast.di.viewmodel.ViewModelFactory
+import com.ylallencheng.fakepodcast.ui.player.PlayerActivity
 import com.ylallencheng.fakepodcast.util.observe
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
@@ -24,18 +25,18 @@ class PodcastActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mBinding.root)
-//        observe()
+        observe()
     }
 
     private fun observe() =
         lifecycleScope.launchWhenResumed {
-//            mViewModel.podcasts.observe(this@PodcastActivity) {
-//                // submist list
-//
-//            }
-
-            mViewModel.getCollection.observe(this@PodcastActivity) {
-
+            mViewModel.navigateToPlayerTrigger.observe(this@PodcastActivity) {
+                PlayerActivity.navigate(
+                    from = this@PodcastActivity,
+                    title = it.feedName,
+                    description = it.description,
+                    contentUrl = it.contentUrl
+                )
             }
         }
 }

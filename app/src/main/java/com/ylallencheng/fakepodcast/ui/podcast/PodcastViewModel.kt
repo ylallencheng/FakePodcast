@@ -42,7 +42,9 @@ class PodcastViewModel @Inject constructor(
             getCollection.value?.data?.contentFeed
                 ?.map {
                     CollectionFeedBindingModel(
-                        it.title ?: ""
+                        feedName = it.title ?: "",
+                        contentUrl = it.contentUrl ?: "",
+                        description = it.description ?: ""
                     )
                 } ?: listOf()
     }
@@ -52,5 +54,12 @@ class PodcastViewModel @Inject constructor(
     fun podcastSelected(bindingModel: PodcastBindingModel) {
         // navigate to collection
         navigateToCollectionTrigger.value = bindingModel
+    }
+
+    val navigateToPlayerTrigger: SingleLiveEvent<CollectionFeedBindingModel> = SingleLiveEvent()
+
+    fun collectionFeedSelected(bindingModel: CollectionFeedBindingModel) {
+        // navigate to player
+        navigateToPlayerTrigger.value = bindingModel
     }
 }

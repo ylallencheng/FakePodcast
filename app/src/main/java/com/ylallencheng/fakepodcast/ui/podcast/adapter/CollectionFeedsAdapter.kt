@@ -38,6 +38,10 @@ class CollectionFeedsAdapter(private val mViewModel: PodcastViewModel) :
         fun bind(bindingModel: CollectionFeedBindingModel) {
             mBinding.apply {
                 mBinding.textViewFeedName.text = bindingModel.feedName
+
+                mBinding.root.setOnClickListener {
+                    mViewModel.collectionFeedSelected(bindingModel)
+                }
             }
         }
     }
