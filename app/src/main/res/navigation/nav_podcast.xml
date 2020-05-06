@@ -9,7 +9,7 @@
         android:id="@+id/podcastsFragment"
         android:name="com.ylallencheng.fakepodcast.ui.podcast.fragment.PodcastsFragment"
         android:label="fragment_podcasts"
-        tools:layout="@layout/fragment_podcasts" >
+        tools:layout="@layout/fragment_podcasts">
         <action
             android:id="@+id/action_podcastsFragment_to_collectionFragment"
             app:destination="@id/collectionFragment" />
@@ -18,5 +18,21 @@
         android:id="@+id/collectionFragment"
         android:name="com.ylallencheng.fakepodcast.ui.podcast.fragment.CollectionFragment"
         android:label="fragment_collection"
-        tools:layout="@layout/fragment_collection" />
+        tools:layout="@layout/fragment_collection">
+        <argument
+            android:name="artworkUrl"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="artistName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="podcastName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

@@ -50,7 +50,7 @@ class PodcastsAdapter(private val mViewModel: PodcastViewModel) :
                 textViewArtistName.text = bindingModel.artistName
                 textViewPodcastName.text = bindingModel.podcastName
 
-                root.setOnClickListener { mViewModel.podcastSelected() }
+                root.setOnClickListener { mViewModel.podcastSelected(bindingModel) }
             }
         }
     }

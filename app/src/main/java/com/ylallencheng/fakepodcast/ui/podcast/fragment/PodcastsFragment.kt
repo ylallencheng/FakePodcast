@@ -15,6 +15,7 @@ import com.ylallencheng.fakepodcast.io.model.Status
 import com.ylallencheng.fakepodcast.ui.podcast.PodcastViewModel
 import com.ylallencheng.fakepodcast.ui.podcast.adapter.PodcastsAdapter
 import dagger.android.support.DaggerFragment
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class PodcastsFragment : DaggerFragment() {
@@ -73,7 +74,13 @@ class PodcastsFragment : DaggerFragment() {
             }
 
             mViewModel.navigateToCollectionTrigger.observe(viewLifecycleOwner) {
-                findNavController().navigate(R.id.action_podcastsFragment_to_collectionFragment)
+                val navAction =
+                    PodcastsFragmentDirections.actionPodcastsFragmentToCollectionFragment(
+                        artworkUrl = it.artworkUrl,
+                        artistName = it.artistName,
+                        podcastName = it.podcastName
+                    )
+                findNavController().navigate(navAction)
             }
         }
 }

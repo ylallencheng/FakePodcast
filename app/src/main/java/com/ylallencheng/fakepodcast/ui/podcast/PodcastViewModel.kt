@@ -7,6 +7,7 @@ import androidx.lifecycle.switchMap
 import com.ylallencheng.fakepodcast.io.model.Collection
 import com.ylallencheng.fakepodcast.io.model.Podcast
 import com.ylallencheng.fakepodcast.io.model.IOStatus
+import com.ylallencheng.fakepodcast.ui.podcast.bindingmodel.CollectionFeedBindingModel
 import com.ylallencheng.fakepodcast.ui.podcast.bindingmodel.PodcastBindingModel
 import com.ylallencheng.fakepodcast.util.SingleLiveEvent
 import javax.inject.Inject
@@ -33,10 +34,23 @@ class PodcastViewModel @Inject constructor(
                 } ?: listOf()
     }
 
-    val navigateToCollectionTrigger: SingleLiveEvent<Boolean> = SingleLiveEvent()
+    val collectionBindingModels: MutableLiveData<List<CollectionFeedBindingModel>> =
+        MutableLiveData()
 
-    fun podcastSelected() {
+    fun convertCollectionToBindingModel() {
+        collectionBindingModels.value =
+            getCollection.value?.data?.contentFeed
+                ?.map {
+                    CollectionFeedBindingModel(
+                        it.title ?: ""
+                    )
+                } ?: listOf()
+    }
+
+    val navigateToCollectionTrigger: SingleLiveEvent<PodcastBindingModel> = SingleLiveEvent()
+
+    fun podcastSelected(bindingModel: PodcastBindingModel) {
         // navigate to collection
-        navigateToCollectionTrigger.trigger()
+        navigateToCollectionTrigger.value = bindingModel
     }
 }
