@@ -11,7 +11,6 @@ import com.ylallencheng.fakepodcast.databinding.FragmentPodcastsBinding
 import com.ylallencheng.fakepodcast.di.viewmodel.ViewModelFactory
 import com.ylallencheng.fakepodcast.io.model.Status
 import com.ylallencheng.fakepodcast.ui.podcast.PodcastViewModel
-import com.ylallencheng.fakepodcast.ui.podcast.fragment.PodcastsFragmentDirections
 import com.ylallencheng.fakepodcast.util.observe
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -28,6 +27,8 @@ class PodcastsFragment : DaggerFragment() {
         FragmentPodcastsBinding.inflate(layoutInflater)
     }
 
+    /* ------------------------------ Lifecycle */
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,37 +39,47 @@ class PodcastsFragment : DaggerFragment() {
         return mBinding.root
     }
 
+    /* ------------------------------ UI */
+
+    /**
+     * Initialize UI
+     */
     private fun initUi() {
+        // recycler view
         mBinding.recyclerViewPodcasts.adapter =
-            PodcastsAdapter(
-                mViewModel
-            )
+            PodcastsAdapter(mViewModel)
     }
 
-    private fun observe() =
-        lifecycleScope.launchWhenResumed {
-            mViewModel.getPodcasts.observe(viewLifecycleOwner) {
-                when (it.status) {
-                    Status.SUCCESS -> {
-                        mViewModel.convertPodcastToBindingModel()
-                    }
-                    else -> {
-                    }
-                }
-            }
+    /* ------------------------------ Data */
 
-            mViewModel.podcastBindingModels.observe(viewLifecycleOwner) {
-                (mBinding.recyclerViewPodcasts.adapter as? PodcastsAdapter)?.submitList(it)
-            }
+    /**
+     * Observe live data in view model
+     */
+    private fun observe() = lifecycleScope.launchWhenResumed {
 
-            mViewModel.navigateToCollectionTrigger.observe(viewLifecycleOwner) {
-                val navAction =
-                    PodcastsFragmentDirections.actionPodcastsFragmentToCollectionFragment(
-                        artworkUrl = it.artworkUrl,
-                        artistName = it.artistName,
-                        podcastName = it.podcastName
-                    )
-                findNavController().navigate(navAction)
+        // podcast data
+        mViewModel.getPodcasts.observe(viewLifecycleOwner) {
+            // convert data to view binding model if the status is success
+            if (it.status == Status.SUCCESS) {
+                mViewModel.convertPodcastToBindingModel()
             }
         }
+
+        // podcast view binding models
+        mViewModel.podcastBindingModels.observe(viewLifecycleOwner) {
+            // submit new data source to adapter
+            (mBinding.recyclerViewPodcasts.adapter as? PodcastsAdapter)?.submitList(it)
+        }
+
+        // navigating to collection
+        mViewModel.navigateToCollectionTrigger.observe(viewLifecycleOwner) {
+            val navAction =
+                PodcastsFragmentDirections.actionPodcastsFragmentToCollectionFragment(
+                    artworkUrl = it.artworkUrl,
+                    artistName = it.artistName,
+                    podcastName = it.podcastName
+                )
+            findNavController().navigate(navAction)
+        }
+    }
 }

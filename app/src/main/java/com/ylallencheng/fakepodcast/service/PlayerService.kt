@@ -15,13 +15,27 @@ import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * Service for hosting MediaPlayer
+ */
 class PlayerService :
     LifecycleService(),
     MediaPlayer.OnPreparedListener,
     MediaPlayer.OnCompletionListener {
 
+    /*
+        The media player
+     */
     private var mMediaPlayer: MediaPlayer? = null
+
+    /*
+        The content url
+     */
     private var mContentUrl: String? = null
+
+    /*
+        The timer job which is used for updating current position
+     */
     private var mTimerJob = lifecycleScope.launchWhenCreated {
         withContext(Dispatchers.Default) {
             while (true) {
@@ -36,7 +50,11 @@ class PlayerService :
         }
     }
 
+    /* ------------------------------ Companion Object */
+
     companion object {
+
+        // Service Actions
         const val ACTION_START_PLAY = "action.start.play"
         const val ACTION_PAUSE = "action.pause"
         const val ACTION_RESUME = "action.resume"
@@ -44,10 +62,24 @@ class PlayerService :
         const val ACTION_FORWARD = "action.forward"
         const val ACTION_SEEK_TO = "action.seek.to"
 
+        /*
+            Playback current position
+         */
         val playbackCurrentPosition: SingleLiveEvent<Int> = SingleLiveEvent()
+
+        /*
+            Playback total duration
+         */
         val playbackTotalDuration: SingleLiveEvent<Int> = SingleLiveEvent()
+
+        /*
+            Playback is currently playing or not
+         */
         val isPlaybackPlaying: SingleLiveEvent<Boolean> = SingleLiveEvent()
 
+        /**
+         * Start playing with given url
+         */
         fun startPlay(context: Context, url: String) =
             context.startService(Intent(context, PlayerService::class.java)
                 .apply {
@@ -55,22 +87,37 @@ class PlayerService :
                     putExtra("url", url)
                 })
 
+        /**
+         * Pause playback
+         */
         fun pause(context: Context) =
             context.startService(Intent(context, PlayerService::class.java)
                 .apply { action = ACTION_PAUSE })
 
+        /**
+         * Resume playback
+         */
         fun resume(context: Context) =
             context.startService(Intent(context, PlayerService::class.java)
                 .apply { action = ACTION_RESUME })
 
+        /**
+         * Replay playback with 30s
+         */
         fun replay(context: Context) =
             context.startService(Intent(context, PlayerService::class.java)
                 .apply { action = ACTION_REPLAY })
 
+        /**
+         * Forward playback with 30s
+         */
         fun forward(context: Context) =
             context.startService(Intent(context, PlayerService::class.java)
                 .apply { action = ACTION_FORWARD })
 
+        /**
+         * Seek playback to given position
+         */
         fun seekTo(context: Context, position: Int) =
             context.startService(Intent(context, PlayerService::class.java)
                 .apply {
@@ -79,8 +126,11 @@ class PlayerService :
                 })
     }
 
+    /* ------------------------------ Lifecycle */
+
     override fun onCreate() {
         super.onCreate()
+        // initialize media player
         mMediaPlayer = MediaPlayer().apply {
             setAudioAttributes(
                 AudioAttributes
@@ -93,6 +143,17 @@ class PlayerService :
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        // release all captured resources
+        mMediaPlayer?.release()
+        mMediaPlayer = null
+        mTimerJob.cancel()
+        mContentUrl = null
+    }
+
+    /* ------------------------------ Overrides */
+
     override fun onStartCommand(
         intent: Intent?,
         flags: Int,
@@ -101,13 +162,19 @@ class PlayerService :
         super.onStartCommand(intent, flags, startId)
         mMediaPlayer?.also { player ->
             when (intent?.action) {
+                /*
+                    Start Play
+                 */
                 ACTION_START_PLAY -> {
+                    // get the content url
                     val url = intent.extras?.getString("url")
                     when {
+                        // same content url, just update playback state
                         url?.equals(mContentUrl, ignoreCase = true) == true -> {
                             updatePlaybackState(player.isPlaying)
                         }
 
+                        // new content url
                         else -> {
                             player.reset()
                             updatePlaybackState(player.isPlaying)
@@ -120,6 +187,9 @@ class PlayerService :
                     }
                 }
 
+                /*
+                    Pause
+                 */
                 ACTION_PAUSE -> {
                     if (player.isPlaying) {
                         player.pause()
@@ -127,6 +197,9 @@ class PlayerService :
                     }
                 }
 
+                /*
+                    Resume
+                 */
                 ACTION_RESUME -> {
                     if (!player.isPlaying) {
                         player.start()
@@ -134,28 +207,29 @@ class PlayerService :
                     }
                 }
 
+                /*
+                    Replay
+                 */
                 ACTION_REPLAY -> {
                     seekTo(player, max(0, player.currentPosition - 30L * 1000).toInt())
                 }
 
+                /*
+                    Forward
+                 */
                 ACTION_FORWARD -> {
                     seekTo(player, min(player.duration, player.currentPosition + 30 * 1000))
                 }
 
+                /*
+                    Seek To
+                 */
                 ACTION_SEEK_TO -> {
                     seekTo(player, intent.extras?.getInt("position") ?: player.currentPosition)
                 }
             }
         }
         return START_STICKY
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mMediaPlayer?.release()
-        mMediaPlayer = null
-        mTimerJob.cancel()
-        mContentUrl = null
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
@@ -170,6 +244,8 @@ class PlayerService :
         updatePlaybackState(false)
         updatePlaybackCurrentPosition(0)
     }
+
+    /* ------------------------------ Base Methods */
 
     @MainThread
     private fun updatePlaybackState(playing: Boolean) {

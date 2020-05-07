@@ -58,7 +58,7 @@
         app:layout_constraintTop_toBottomOf="@id/textViewCurrentProgress" />
 
     <ImageButton
-        android:id="@+id/imageViewPauseOrPlay"
+        android:id="@+id/imageViewPausePlay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="48dp"

@@ -13,7 +13,6 @@ import com.ylallencheng.fakepodcast.databinding.FragmentCollectionFeedsBinding
 import com.ylallencheng.fakepodcast.di.viewmodel.ViewModelFactory
 import com.ylallencheng.fakepodcast.io.model.Status
 import com.ylallencheng.fakepodcast.ui.podcast.PodcastViewModel
-import com.ylallencheng.fakepodcast.ui.podcast.fragment.CollectionFragmentArgs
 import com.ylallencheng.fakepodcast.util.observe
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -31,7 +30,9 @@ class CollectionFeedsFragment : DaggerFragment() {
     }
 
     // Navigation arguments
-    private val mArgs: CollectionFragmentArgs by navArgs()
+    private val mArgs: CollectionFeedsFragmentArgs by navArgs()
+
+    /* ------------------------------ Lifecycle */
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,48 +44,63 @@ class CollectionFeedsFragment : DaggerFragment() {
         return mBinding.root
     }
 
+    /* ------------------------------ UI */
+
+    /**
+     * Initialize UI
+     */
     private fun initUi() {
         mBinding.apply {
+            // artwork image
             Glide
                 .with(root)
                 .load(mArgs.artworkUrl)
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .into(imageViewArtwork)
+
+            // collapsing toolbar
             collapsingToolbarLayout.title = mArgs.podcastName
+
+            // recycler view
             recyclerViewCollectionFeeds.adapter =
-                CollectionFeedsAdapter(
-                    mViewModel
-                )
+                CollectionFeedsAdapter(mViewModel)
         }
     }
 
-    private fun observe() =
-        lifecycleScope.launchWhenResumed {
-            mViewModel.getCollection.observe(viewLifecycleOwner) {
-                when (it.status) {
-                    Status.SUCCESS -> {
-                        it.data?.artworkBigImageUrl?.also { imageUrl ->
-                            Glide
-                                .with(mBinding.root)
-                                .load(imageUrl)
-                                .placeholder(R.drawable.ic_launcher_foreground)
-                                .into(mBinding.imageViewArtwork)
-                        }
+    /* ------------------------------ Data */
 
-                        it.data?.collectionName?.also { collectionName ->
-                            mBinding.collapsingToolbarLayout.title = collectionName
-                        }
+    /**
+     * Observe live data in view model
+     */
+    private fun observe() = lifecycleScope.launchWhenResumed {
 
-                        mViewModel.convertCollectionToBindingModel()
-                    }
-                    else -> {
-                    }
+        // collection data
+        mViewModel.getCollection.observe(viewLifecycleOwner) {
+            if (it.status == Status.SUCCESS) {
+                // update the artwork image
+                it.data?.artworkBigImageUrl?.also { imageUrl ->
+                    Glide
+                        .with(mBinding.root)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_launcher_foreground)
+                        .into(mBinding.imageViewArtwork)
                 }
-            }
 
-            mViewModel.collectionBindingModels.observe(viewLifecycleOwner) {
-                (mBinding.recyclerViewCollectionFeeds.adapter as? CollectionFeedsAdapter)
-                    ?.submitList(it)
+                // update the collection
+                it.data?.collectionName?.also { collectionName ->
+                    mBinding.collapsingToolbarLayout.title = collectionName
+                }
+
+                // convert collection feed to view binding model
+                mViewModel.convertCollectionFeedToBindingModel()
             }
         }
+
+        // collection feed view binding model
+        mViewModel.collectionBindingModels.observe(viewLifecycleOwner) {
+            // submit new data source to adapter
+            (mBinding.recyclerViewCollectionFeeds.adapter as? CollectionFeedsAdapter)
+                ?.submitList(it)
+        }
+    }
 }

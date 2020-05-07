@@ -7,7 +7,14 @@ data class CollectionFeedBindingModel(
     val contentUrl: String,
     val description: String
 ) {
+
+    /* ------------------------------ Companion Object */
+
     companion object {
+
+        /*
+            The item callback for list adapter to check item differences
+         */
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<CollectionFeedBindingModel>() {
             override fun areItemsTheSame(
                 oldItem: CollectionFeedBindingModel,

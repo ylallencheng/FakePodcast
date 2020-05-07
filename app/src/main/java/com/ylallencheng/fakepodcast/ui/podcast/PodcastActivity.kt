@@ -22,22 +22,28 @@ class PodcastActivity : DaggerAppCompatActivity() {
         ActivityPodcastBinding.inflate(layoutInflater)
     }
 
+    /* ------------------------------ Lifecycle */
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mBinding.root)
         observe()
     }
 
-    private fun observe() =
-        lifecycleScope.launchWhenResumed {
-            mViewModel.navigateToPlayerTrigger.observe(this@PodcastActivity) {
-                PlayerActivity.navigate(
-                    from = this@PodcastActivity,
-                    title = it.feedName,
-                    description = it.description,
-                    contentUrl = it.contentUrl,
-                    artworkUrl = mViewModel.getCollection.value?.data?.artworkBigImageUrl ?: ""
-                )
-            }
+    /* ------------------------------ Data */
+
+    /**
+     * Observe live data from view model
+     */
+    private fun observe() = lifecycleScope.launchWhenResumed {
+        mViewModel.navigateToPlayerTrigger.observe(this@PodcastActivity) {
+            PlayerActivity.navigate(
+                from = this@PodcastActivity,
+                title = it.feedName,
+                description = it.description,
+                contentUrl = it.contentUrl,
+                artworkUrl = mViewModel.getCollection.value?.data?.artworkBigImageUrl ?: ""
+            )
         }
+    }
 }

@@ -7,6 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import java.util.concurrent.TimeUnit
 
+/**
+ * Kt extension for simplify livedata-observe boilerplate
+ */
 fun <T> LiveData<T>.observe(
     lifecycleOwner: LifecycleOwner,
     onChange: (T) -> Unit
@@ -15,6 +18,9 @@ fun <T> LiveData<T>.observe(
         onChange(it)
     })
 
+/**
+ * Format playback time label
+ */
 fun formatPlaybackTimeLabel(duration: Long) =
     String.format(
         "%02d:%02d",
