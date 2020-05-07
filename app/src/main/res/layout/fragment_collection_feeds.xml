@@ -16,11 +16,6 @@
             android:id="@+id/collapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:collapsedTitleTextAppearance="@style/TextAppearance.CollapsedToolbar"
-            app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleGravity="bottom"
-            app:expandedTitleTextAppearance="@style/TextAppearance.ExpandedToolbar"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:toolbarId="@id/toolbar">
 
             <ImageView
@@ -38,9 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@android:color/transparent"
-                app:layout_collapseMode="pin"
-                app:subtitle="@string/app_name"
-                app:title="@string/label_collection" />
+                app:layout_collapseMode="pin" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
