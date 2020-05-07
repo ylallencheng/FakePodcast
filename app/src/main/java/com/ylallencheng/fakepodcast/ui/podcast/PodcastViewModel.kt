@@ -3,22 +3,21 @@ package com.ylallencheng.fakepodcast.ui.podcast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.switchMap
 import com.ylallencheng.fakepodcast.io.model.Collection
 import com.ylallencheng.fakepodcast.io.model.Podcast
 import com.ylallencheng.fakepodcast.io.model.IOStatus
-import com.ylallencheng.fakepodcast.ui.podcast.bindingmodel.CollectionFeedBindingModel
-import com.ylallencheng.fakepodcast.ui.podcast.bindingmodel.PodcastBindingModel
+import com.ylallencheng.fakepodcast.ui.podcast.fragment.collectionfeed.CollectionFeedBindingModel
+import com.ylallencheng.fakepodcast.ui.podcast.fragment.podcasts.PodcastBindingModel
 import com.ylallencheng.fakepodcast.util.SingleLiveEvent
 import javax.inject.Inject
 
 class PodcastViewModel @Inject constructor(
-    private val mPodcastRepository: PodcastRepository
+    podcastRepository: PodcastRepository
 ) : ViewModel() {
 
-    val getPodcasts: LiveData<IOStatus<List<Podcast>>> = mPodcastRepository.getPodcasts()
+    val getPodcasts: LiveData<IOStatus<List<Podcast>>> = podcastRepository.getPodcasts()
 
-    val getCollection: LiveData<IOStatus<Collection>> = mPodcastRepository.getCollection()
+    val getCollection: LiveData<IOStatus<Collection>> = podcastRepository.getCollection()
 
     val podcastBindingModels: MutableLiveData<List<PodcastBindingModel>> = MutableLiveData()
 

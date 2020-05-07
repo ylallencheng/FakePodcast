@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/podcastsFragment"
-        android:name="com.ylallencheng.fakepodcast.ui.podcast.fragment.PodcastsFragment"
+        android:name="com.ylallencheng.fakepodcast.ui.podcast.fragment.podcasts.PodcastsFragment"
         android:label="fragment_podcasts"
         tools:layout="@layout/fragment_podcasts">
         <action
@@ -16,9 +16,9 @@
     </fragment>
     <fragment
         android:id="@+id/collectionFragment"
-        android:name="com.ylallencheng.fakepodcast.ui.podcast.fragment.CollectionFragment"
+        android:name="com.ylallencheng.fakepodcast.ui.podcast.fragment.collectionfeed.CollectionFeedsFragment"
         android:label="fragment_collection"
-        tools:layout="@layout/fragment_collection">
+        tools:layout="@layout/fragment_collection_feeds">
         <argument
             android:name="artworkUrl"
             android:defaultValue="@null"

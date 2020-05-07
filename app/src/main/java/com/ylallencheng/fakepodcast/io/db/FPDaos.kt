@@ -1,6 +1,5 @@
 package com.ylallencheng.fakepodcast.io.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -12,7 +11,7 @@ import com.ylallencheng.fakepodcast.io.model.Podcast
 interface PodcastDao {
 
     @Query("SELECT * FROM Podcast")
-    fun getAllPodcasts(): List<Podcast>
+    fun getAllPodcasts(): List<Podcast>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPodcasts(podcasts: List<Podcast>)
@@ -21,8 +20,8 @@ interface PodcastDao {
 @Dao
 interface CollectionDao {
     @Query("SELECT * FROM Collection WHERE collectionId == :collectionId")
-    fun getCollection(collectionId: Int): Collection
+    fun getCollection(collectionId: Int): Collection?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCollections(collections: List<Collection>)
+    suspend fun insertCollection(collection: Collection)
 }

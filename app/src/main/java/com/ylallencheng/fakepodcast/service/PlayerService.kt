@@ -1,25 +1,40 @@
 package com.ylallencheng.fakepodcast.service
 
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.MediaPlayer.SEEK_CLOSEST
 import android.os.Build
-import android.os.IBinder
-import androidx.lifecycle.MutableLiveData
+import androidx.annotation.MainThread
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
 import com.ylallencheng.fakepodcast.util.SingleLiveEvent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.math.min
 
 class PlayerService :
-    Service(),
+    LifecycleService(),
     MediaPlayer.OnPreparedListener,
     MediaPlayer.OnCompletionListener {
 
     private var mMediaPlayer: MediaPlayer? = null
     private var mContentUrl: String? = null
+    private var mTimerJob = lifecycleScope.launchWhenCreated {
+        withContext(Dispatchers.Default) {
+            while (true) {
+                mMediaPlayer?.also {
+                    if (it.isPlaying) {
+                        if (it.currentPosition <= it.duration) {
+                            postUpdatePlaybackCurrentPosition(it.currentPosition)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     companion object {
         const val ACTION_START_PLAY = "action.start.play"
@@ -27,9 +42,11 @@ class PlayerService :
         const val ACTION_RESUME = "action.resume"
         const val ACTION_REPLAY = "action.replay"
         const val ACTION_FORWARD = "action.forward"
+        const val ACTION_SEEK_TO = "action.seek.to"
 
-        val duration: MutableLiveData<Int> = MutableLiveData()
-        val playing: SingleLiveEvent<Boolean> = SingleLiveEvent()
+        val playbackCurrentPosition: SingleLiveEvent<Int> = SingleLiveEvent()
+        val playbackTotalDuration: SingleLiveEvent<Int> = SingleLiveEvent()
+        val isPlaybackPlaying: SingleLiveEvent<Boolean> = SingleLiveEvent()
 
         fun startPlay(context: Context, url: String) =
             context.startService(Intent(context, PlayerService::class.java)
@@ -53,9 +70,14 @@ class PlayerService :
         fun forward(context: Context) =
             context.startService(Intent(context, PlayerService::class.java)
                 .apply { action = ACTION_FORWARD })
-    }
 
-    override fun onBind(intent: Intent?): IBinder? = null
+        fun seekTo(context: Context, position: Int) =
+            context.startService(Intent(context, PlayerService::class.java)
+                .apply {
+                    action = ACTION_SEEK_TO
+                    putExtra("position", position)
+                })
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -67,6 +89,7 @@ class PlayerService :
                     .build()
             )
             setOnPreparedListener(this@PlayerService)
+            setOnCompletionListener(this@PlayerService)
         }
     }
 
@@ -75,19 +98,19 @@ class PlayerService :
         flags: Int,
         startId: Int
     ): Int {
+        super.onStartCommand(intent, flags, startId)
         mMediaPlayer?.also { player ->
-
             when (intent?.action) {
                 ACTION_START_PLAY -> {
                     val url = intent.extras?.getString("url")
                     when {
                         url?.equals(mContentUrl, ignoreCase = true) == true -> {
-                            playing.postValue(player.isPlaying)
+                            updatePlaybackState(player.isPlaying)
                         }
 
                         else -> {
                             player.reset()
-                            playing.postValue(player.isPlaying)
+                            updatePlaybackState(player.isPlaying)
                             if (url?.isNotEmpty() == true) {
                                 player.setDataSource(url)
                                 player.prepareAsync()
@@ -100,35 +123,27 @@ class PlayerService :
                 ACTION_PAUSE -> {
                     if (player.isPlaying) {
                         player.pause()
-                        playing.postValue(player.isPlaying)
+                        updatePlaybackState(player.isPlaying)
                     }
                 }
 
                 ACTION_RESUME -> {
                     if (!player.isPlaying) {
                         player.start()
-                        playing.postValue(player.isPlaying)
+                        updatePlaybackState(player.isPlaying)
                     }
                 }
 
                 ACTION_REPLAY -> {
-                    val finalPosition = max(0, player.currentPosition - 30L * 1000)
-                    when {
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                            player.seekTo(finalPosition, SEEK_CLOSEST)
-                        else ->
-                            player.seekTo(finalPosition.toInt())
-                    }
+                    seekTo(player, max(0, player.currentPosition - 30L * 1000).toInt())
                 }
 
                 ACTION_FORWARD -> {
-                    val finalPosition = min(player.duration, player.currentPosition + 30 * 1000)
-                    when {
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                            player.seekTo(finalPosition.toLong(), SEEK_CLOSEST)
-                        else ->
-                            player.seekTo(finalPosition)
-                    }
+                    seekTo(player, min(player.duration, player.currentPosition + 30 * 1000))
+                }
+
+                ACTION_SEEK_TO -> {
+                    seekTo(player, intent.extras?.getInt("position") ?: player.currentPosition)
                 }
             }
         }
@@ -139,17 +154,53 @@ class PlayerService :
         super.onDestroy()
         mMediaPlayer?.release()
         mMediaPlayer = null
+        mTimerJob.cancel()
+        mContentUrl = null
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
         mp?.also {
             it.start()
-            duration.postValue(it.duration)
-            playing.postValue(it.isPlaying)
+            updatePlaybackTotalDuration(it.duration)
+            updatePlaybackState(it.isPlaying)
         }
     }
 
     override fun onCompletion(mp: MediaPlayer?) {
-        playing.postValue(false)
+        updatePlaybackState(false)
+        updatePlaybackCurrentPosition(0)
+    }
+
+    @MainThread
+    private fun updatePlaybackState(playing: Boolean) {
+        isPlaybackPlaying.value = playing
+    }
+
+    @MainThread
+    private fun updatePlaybackTotalDuration(duration: Int) {
+        playbackTotalDuration.value = duration
+    }
+
+    @MainThread
+    private fun updatePlaybackCurrentPosition(position: Int) {
+        playbackCurrentPosition.value = position
+    }
+
+    private fun postUpdatePlaybackCurrentPosition(position: Int) {
+        playbackCurrentPosition.postValue(position)
+    }
+
+    @MainThread
+    private fun seekTo(
+        player: MediaPlayer,
+        position: Int
+    ) {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                player.seekTo(position.toLong(), SEEK_CLOSEST)
+            else ->
+                player.seekTo(position)
+        }
+        updatePlaybackCurrentPosition(position)
     }
 }

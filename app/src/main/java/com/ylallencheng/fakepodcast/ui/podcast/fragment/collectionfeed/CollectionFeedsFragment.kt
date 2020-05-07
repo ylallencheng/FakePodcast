@@ -1,4 +1,4 @@
-package com.ylallencheng.fakepodcast.ui.podcast.fragment
+package com.ylallencheng.fakepodcast.ui.podcast.fragment.collectionfeed
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,16 +9,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.ylallencheng.fakepodcast.R
-import com.ylallencheng.fakepodcast.databinding.FragmentCollectionBinding
+import com.ylallencheng.fakepodcast.databinding.FragmentCollectionFeedsBinding
 import com.ylallencheng.fakepodcast.di.viewmodel.ViewModelFactory
 import com.ylallencheng.fakepodcast.io.model.Status
 import com.ylallencheng.fakepodcast.ui.podcast.PodcastViewModel
-import com.ylallencheng.fakepodcast.ui.podcast.adapter.CollectionFeedsAdapter
+import com.ylallencheng.fakepodcast.ui.podcast.fragment.CollectionFragmentArgs
 import com.ylallencheng.fakepodcast.util.observe
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
-class CollectionFragment : DaggerFragment() {
+class CollectionFeedsFragment : DaggerFragment() {
 
     // View Model
     @Inject
@@ -26,8 +26,8 @@ class CollectionFragment : DaggerFragment() {
     private val mViewModel: PodcastViewModel by activityViewModels { viewModelFactory }
 
     // View binding
-    private val mBinding: FragmentCollectionBinding by lazy {
-        FragmentCollectionBinding.inflate(layoutInflater)
+    private val mBinding: FragmentCollectionFeedsBinding by lazy {
+        FragmentCollectionFeedsBinding.inflate(layoutInflater)
     }
 
     // Navigation arguments
@@ -39,15 +39,8 @@ class CollectionFragment : DaggerFragment() {
         savedInstanceState: Bundle?
     ): View? {
         initUi()
-        return mBinding.root
-    }
-
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?
-    ) {
-        super.onViewCreated(view, savedInstanceState)
         observe()
+        return mBinding.root
     }
 
     private fun initUi() {
@@ -57,8 +50,11 @@ class CollectionFragment : DaggerFragment() {
                 .load(mArgs.artworkUrl)
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .into(imageViewArtwork)
-            mBinding.collapsingToolbarLayout.title = mArgs.podcastName
-            recyclerViewCollectionFeeds.adapter = CollectionFeedsAdapter(mViewModel)
+            collapsingToolbarLayout.title = mArgs.podcastName
+            recyclerViewCollectionFeeds.adapter =
+                CollectionFeedsAdapter(
+                    mViewModel
+                )
         }
     }
 
@@ -66,8 +62,6 @@ class CollectionFragment : DaggerFragment() {
         lifecycleScope.launchWhenResumed {
             mViewModel.getCollection.observe(viewLifecycleOwner) {
                 when (it.status) {
-                    Status.LOADING -> {
-                    }
                     Status.SUCCESS -> {
                         it.data?.artworkBigImageUrl?.also { imageUrl ->
                             Glide
@@ -83,7 +77,7 @@ class CollectionFragment : DaggerFragment() {
 
                         mViewModel.convertCollectionToBindingModel()
                     }
-                    Status.FAILED -> {
+                    else -> {
                     }
                 }
             }

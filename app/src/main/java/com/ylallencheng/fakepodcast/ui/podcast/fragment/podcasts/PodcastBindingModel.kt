@@ -1,4 +1,4 @@
-package com.ylallencheng.fakepodcast.ui.podcast.bindingmodel
+package com.ylallencheng.fakepodcast.ui.podcast.fragment.podcasts
 
 import androidx.recyclerview.widget.DiffUtil
 

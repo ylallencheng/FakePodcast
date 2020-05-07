@@ -1,4 +1,4 @@
-package com.ylallencheng.fakepodcast.ui.podcast.adapter
+package com.ylallencheng.fakepodcast.ui.podcast.fragment.podcasts
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,10 +8,10 @@ import com.bumptech.glide.Glide
 import com.ylallencheng.fakepodcast.R
 import com.ylallencheng.fakepodcast.databinding.ItemPodcastBinding
 import com.ylallencheng.fakepodcast.ui.podcast.PodcastViewModel
-import com.ylallencheng.fakepodcast.ui.podcast.bindingmodel.PodcastBindingModel
 
 class PodcastsAdapter(private val mViewModel: PodcastViewModel) :
-    ListAdapter<PodcastBindingModel, PodcastsAdapter.PodcastViewHolder>(PodcastBindingModel.DIFF_CALLBACK) {
+    ListAdapter<PodcastBindingModel, PodcastsAdapter.PodcastViewHolder>(
+        PodcastBindingModel.DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

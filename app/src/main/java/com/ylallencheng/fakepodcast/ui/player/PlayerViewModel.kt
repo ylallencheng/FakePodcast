@@ -9,25 +9,28 @@ import javax.inject.Inject
 
 class PlayerViewModel @Inject constructor() : ViewModel() {
 
-    var dragging: Boolean = false
-    var playingStatusForceChanged: Boolean = false
+    private var playingStatusForceChanged: Boolean = false
 
-    val contentTotalDuration: LiveData<Int> = PlayerService.duration.map { it }
-    val playing: LiveData<Boolean> = PlayerService.playing.map { it }
+    val currentPosition: LiveData<Int> = PlayerService.playbackCurrentPosition.map { it }
+    val contentTotalDuration: LiveData<Int> = PlayerService.playbackTotalDuration.map { it }
+    val playing: LiveData<Boolean> = PlayerService.isPlaybackPlaying.map { it }
 
-    fun startDragging() {
-        dragging = true
+    fun startDragging(applicationContext: Context) {
+        if (playing.value == true) {
+            playingStatusForceChanged = true
+            PlayerService.pause(applicationContext)
+        }
     }
 
-    fun stopDragging() {
-        dragging = false
+    fun stopDragging(
+        applicationContext: Context,
+        latestPosition: Int
+    ) {
         if (playingStatusForceChanged) {
+            PlayerService.resume(applicationContext)
         }
         playingStatusForceChanged = false
-    }
-
-    fun progressChanged() {
-
+        PlayerService.seekTo(applicationContext, latestPosition)
     }
 
     fun startPlay(

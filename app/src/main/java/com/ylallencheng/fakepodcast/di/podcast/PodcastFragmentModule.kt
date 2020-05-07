@@ -1,7 +1,7 @@
 package com.ylallencheng.fakepodcast.di.podcast
 
-import com.ylallencheng.fakepodcast.ui.podcast.fragment.CollectionFragment
-import com.ylallencheng.fakepodcast.ui.podcast.fragment.PodcastsFragment
+import com.ylallencheng.fakepodcast.ui.podcast.fragment.collectionfeed.CollectionFeedsFragment
+import com.ylallencheng.fakepodcast.ui.podcast.fragment.podcasts.PodcastsFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -12,5 +12,5 @@ abstract class PodcastFragmentModule {
     abstract fun contributePodcastsFragment(): PodcastsFragment
 
     @ContributesAndroidInjector
-    abstract fun contributeCollectionFragment(): CollectionFragment
+    abstract fun contributeCollectionFragment(): CollectionFeedsFragment
 }

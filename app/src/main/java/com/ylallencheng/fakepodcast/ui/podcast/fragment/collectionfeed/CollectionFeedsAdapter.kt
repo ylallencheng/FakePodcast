@@ -1,4 +1,4 @@
-package com.ylallencheng.fakepodcast.ui.podcast.adapter
+package com.ylallencheng.fakepodcast.ui.podcast.fragment.collectionfeed
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ylallencheng.fakepodcast.databinding.ItemCollectionFeedBinding
 import com.ylallencheng.fakepodcast.ui.podcast.PodcastViewModel
-import com.ylallencheng.fakepodcast.ui.podcast.bindingmodel.CollectionFeedBindingModel
 
 class CollectionFeedsAdapter(private val mViewModel: PodcastViewModel) :
     ListAdapter<CollectionFeedBindingModel, CollectionFeedsAdapter.CollectionFeedViewHolder>(

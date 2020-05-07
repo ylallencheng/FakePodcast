@@ -15,7 +15,7 @@ fun <T> LiveData<T>.observe(
         onChange(it)
     })
 
-fun formatPlayerDuration(duration: Long) =
+fun formatPlaybackTimeLabel(duration: Long) =
     String.format(
         "%02d:%02d",
         TimeUnit.MILLISECONDS.toMinutes(duration),

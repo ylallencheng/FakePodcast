@@ -1,4 +1,4 @@
-package com.ylallencheng.fakepodcast.ui.podcast.fragment
+package com.ylallencheng.fakepodcast.ui.podcast.fragment.podcasts
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +11,7 @@ import com.ylallencheng.fakepodcast.databinding.FragmentPodcastsBinding
 import com.ylallencheng.fakepodcast.di.viewmodel.ViewModelFactory
 import com.ylallencheng.fakepodcast.io.model.Status
 import com.ylallencheng.fakepodcast.ui.podcast.PodcastViewModel
-import com.ylallencheng.fakepodcast.ui.podcast.adapter.PodcastsAdapter
+import com.ylallencheng.fakepodcast.ui.podcast.fragment.PodcastsFragmentDirections
 import com.ylallencheng.fakepodcast.util.observe
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -34,35 +34,25 @@ class PodcastsFragment : DaggerFragment() {
         savedInstanceState: Bundle?
     ): View? {
         initUi()
+        observe()
         return mBinding.root
     }
 
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        observe()
-    }
-
     private fun initUi() {
-        mBinding.recyclerViewPodcasts.adapter = PodcastsAdapter(mViewModel)
+        mBinding.recyclerViewPodcasts.adapter =
+            PodcastsAdapter(
+                mViewModel
+            )
     }
 
     private fun observe() =
         lifecycleScope.launchWhenResumed {
             mViewModel.getPodcasts.observe(viewLifecycleOwner) {
                 when (it.status) {
-                    Status.LOADING -> {
-
-                    }
-
                     Status.SUCCESS -> {
                         mViewModel.convertPodcastToBindingModel()
                     }
-
-                    Status.FAILED -> {
-
+                    else -> {
                     }
                 }
             }

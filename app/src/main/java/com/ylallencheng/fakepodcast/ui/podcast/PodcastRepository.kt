@@ -20,29 +20,23 @@ class PodcastRepository @Inject constructor(
 
     fun getPodcasts(): LiveData<IOStatus<List<Podcast>>> =
         liveData(Dispatchers.IO) {
-
             emit(IOStatus.Loading())
-
             val podcasts = mPodcastDao.getAllPodcasts()
-            if (podcasts.isNotEmpty()) {
+            if (podcasts?.isNotEmpty() == true) {
                 emit(IOStatus.Successful(data = podcasts))
-            }
+            } else {
+                try {
+                    val response = mPodcastService.getPodcasts()
+                    val responsePodcasts = response.data?.podcasts
 
-            try {
-                val response = mPodcastService.getPodcasts()
-                val responsePodcasts = response.data?.podcasts
+                    if (responsePodcasts != null) {
+                        mPodcastDao.insertPodcasts(responsePodcasts)
+                        emit(IOStatus.Successful(data = responsePodcasts))
+                    } else {
+                        emit(IOStatus.Failed<List<Podcast>>(errorMessage = "podcast list is empty"))
+                    }
 
-                if (responsePodcasts != null) {
-                    mPodcastDao.insertPodcasts(responsePodcasts)
-                    emit(IOStatus.Successful(data = responsePodcasts))
-                } else {
-                    emit(IOStatus.Failed<List<Podcast>>(errorMessage = "Result is empty"))
-                }
-
-            } catch (e: HttpException) {
-                if (podcasts.isNotEmpty()) {
-                    emit(IOStatus.Successful(data = podcasts))
-                } else {
+                } catch (e: HttpException) {
                     emit(IOStatus.Failed<List<Podcast>>(errorMessage = "Something went wrong"))
                 }
             }
@@ -51,23 +45,24 @@ class PodcastRepository @Inject constructor(
     fun getCollection(): LiveData<IOStatus<Collection>> =
         liveData(Dispatchers.IO) {
             emit(IOStatus.Loading())
-
             val collection = mCollectionDao.getCollection(160904630)
-            emit(IOStatus.Successful(data = collection))
-
-            try {
-                val response = mPodcastService.getCollection()
-                val responseCollection = response.data?.collection
-
-                if (responseCollection != null) {
-                    mCollectionDao.insertCollections(listOf(responseCollection))
-                    emit(IOStatus.Successful(data = responseCollection))
-                } else {
-                    emit(IOStatus.Failed<Collection>(errorMessage = "collection is empty"))
-                }
-
-            } catch (e: HttpException) {
+            if (collection != null) {
                 emit(IOStatus.Successful(data = collection))
+            } else {
+                try {
+                    val response = mPodcastService.getCollection()
+                    val responseCollection = response.data?.collection
+
+                    if (responseCollection != null) {
+                        mCollectionDao.insertCollection(responseCollection)
+                        emit(IOStatus.Successful(data = responseCollection))
+                    } else {
+                        emit(IOStatus.Failed<Collection>(errorMessage = "collection is null"))
+                    }
+
+                } catch (e: HttpException) {
+                    emit(IOStatus.Failed<Collection>(errorMessage = "Something went wrong"))
+                }
             }
         }
 }
