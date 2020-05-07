@@ -1,6 +1,7 @@
 package com.ylallencheng.fakepodcast.ui.podcast.fragment.collectionfeed
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -29,7 +30,7 @@ class CollectionFeedsAdapter(
         holder: CollectionFeedViewHolder,
         position: Int
     ) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), position == itemCount - 1)
     }
 
     /* ------------------------------ View Holder */
@@ -45,10 +46,16 @@ class CollectionFeedsAdapter(
         /**
          * Bind view with binding model
          */
-        fun bind(bindingModel: CollectionFeedBindingModel) {
+        fun bind(
+            bindingModel: CollectionFeedBindingModel,
+            lastItem: Boolean
+        ) {
             mBinding.textViewFeedName.text = bindingModel.feedName
             mBinding.root.setOnClickListener {
                 mViewModel.collectionFeedSelected(bindingModel)
+            }
+            if (lastItem) {
+                mBinding.viewDivider.visibility = View.GONE
             }
         }
     }
