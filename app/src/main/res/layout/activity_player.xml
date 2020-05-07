@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -33,7 +34,8 @@
         android:layout_marginStart="16dp"
         android:text="00:00"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/seekBar" />
+        app:layout_constraintTop_toBottomOf="@id/seekBar"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/textViewTotalProgress"
@@ -42,7 +44,8 @@
         android:layout_marginEnd="16dp"
         android:text="00:00"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/seekBar" />
+        app:layout_constraintTop_toBottomOf="@id/seekBar"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/textViewTitle"
@@ -55,7 +58,8 @@
         android:text="The Missing | 8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewCurrentProgress" />
+        app:layout_constraintTop_toBottomOf="@id/textViewCurrentProgress"
+        tools:ignore="HardcodedText" />
 
     <ImageButton
         android:id="@+id/imageViewPausePlay"
@@ -80,7 +84,7 @@
         android:src="@drawable/replay_30_24px"
         android:tint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewPauseOrPlay"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewPausePlay"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
@@ -94,5 +98,5 @@
         android:tint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageViewPauseOrPlay" />
+        app:layout_constraintStart_toEndOf="@+id/imageViewPausePlay" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/imageViewPodcastArtwork"
@@ -20,14 +23,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="ArtistName"
-        app:layout_constraintTop_toBottomOf="@id/imageViewPodcastArtwork" />
+        app:layout_constraintTop_toBottomOf="@id/imageViewPodcastArtwork"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/textViewPodcastName"
-        style="@style/TextAppearance.MaterialComponents.Body1"
+        style="@style/TextAppearance.MaterialComponents.Caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="PodcastName"
-        app:layout_constraintTop_toBottomOf="@id/textViewArtistName" />
+        app:layout_constraintTop_toBottomOf="@id/textViewArtistName"
+        tools:ignore="HardcodedText" />
 </androidx.constraintlayout.widget.ConstraintLayout>
